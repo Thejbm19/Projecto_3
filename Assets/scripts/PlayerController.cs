@@ -28,6 +28,18 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision otherCollider)
     {
-        isOnTheGround = true;
+        if (otherCollider.gameObject.CompareTag("ground"))
+        {
+             isOnTheGround = true;
+        }
+
+         if (otherCollider.gameObject.CompareTag("obstaculo"))
+         {
+            Destroy(gameObject);
+         }
+        
+           
+        
+        
     }
 }
