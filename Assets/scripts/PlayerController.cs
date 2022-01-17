@@ -11,6 +11,9 @@ public class PlayerController : MonoBehaviour
     public float gravityModifier = 1;
     private bool isOnTheGround = true;
     public bool gameOver;
+
+    public ParticleSystem explosionParticleSystem;
+    public ParticleSystem runParticleSystem;
    
     void Start()
     {
@@ -30,30 +33,40 @@ public class PlayerController : MonoBehaviour
            
             playerRigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isOnTheGround = false;
-            playerAnimator.SetTrigger("Jump_trig"); //accedeix a sa animacio de saltar cuando esta corriendo,  es sa condicio per donarse sa animacio
-
+            playerAnimator.SetTrigger("Jump_trig"); //accedeix a sa animacio de saltar cuando esta corriendo,  es sa condicio per donarse s'animacio
+            runParticleSystem.Stop();
         }
     }
 
     private void OnCollisionEnter(Collision otherCollider)
     {
-        if (otherCollider.gameObject.CompareTag("ground"))
+        if (!gameOver)
         {
-             isOnTheGround = true;
+            if (otherCollider.gameObject.CompareTag("ground"))
+            {
+                isOnTheGround = true;
+                runParticleSystem.Play();
+
+            }
+
+            if (otherCollider.gameObject.CompareTag("obstaculo"))
+            {
+                gameOver = true;
+                int randomDeath = Random.Range(1, 3);
+                playerAnimator.SetBool("Death_b", true);         // Condicio 1 per morir booleana
+                playerAnimator.SetInteger("DeathType_int", randomDeath);   // Condicio 2 per triar quina mort si 1 o 2 o random
+
+                explosionParticleSystem.Play();
+                runParticleSystem.Stop();
+                // ParticleSystem explosionEscena = Instantiate(explosionParticleSystem, transform.position + new vector3(0, 1.5f, 0) o --> fer una variable que agafi es valor, explosionParticleSystem.transform.rotation) ; por si le metes un prefab de particle en ves de ponerlo en escena
+                // explosionEscena.Play();
+            }
+
+
+
+
+
+
         }
-
-         if (otherCollider.gameObject.CompareTag("obstaculo"))
-         {
-            gameOver = true;
-            int randomDeath = Random.Range(1, 3);
-            playerAnimator.SetBool("Death_b", true);         // Condicio 1 per morir booleana
-            playerAnimator.SetInteger("DeathType_int", randomDeath);   // Condicio 2 per triar quina mort si 1 o 2
-         } 
-
-       
-
-
-
-
     }
 }
